@@ -1,0 +1,56 @@
+# Vordur Configuration
+# ====================
+# Add/remove sources here. Each source needs:
+#   name:     Display name
+#   url:      The changelog page URL
+#   selector: CSS selector that matches individual changelog entries
+#   max_entries: (optional) How many entries to track per check (default: 20)
+ 
+sources:
+ 
+  # Claude product release notes (Intercom page, each date = one entry)
+  - name: "Claude Release Notes"
+    url: "https://support.claude.com/en/articles/12138966-release-notes"
+    selector: ".intercom-interblocks-subheading3"
+    max_entries: 15
+ 
+  # Claude Code changelog (code.claude.com blocks robots, so we use GitHub releases)
+  - name: "Claude Code"
+    url: "https://github.com/anthropics/claude-code/releases"
+    selector: ".Box-body .d-flex"
+    max_entries: 10
+ 
+  # OpenAI Codex changelog (each top-level li = one release entry)
+  - name: "OpenAI Codex"
+    url: "https://developers.openai.com/codex/changelog"
+    selector: "section.flex.flex-col.gap-6 li.scroll-mt-28"
+    max_entries: 15
+ 
+  # Gemini CLI release notes (Starlight docs site, each h2 wrapper = one version)
+  - name: "Gemini CLI"
+    url: "https://geminicli.com/docs/changelogs/"
+    selector: ".sl-heading-wrapper.level-h2"
+    max_entries: 15
+  
+  # --- Add your own sources below ---
+  # - name: "My Tool"
+  #   url: "https://example.com/changelog"
+  #   selector: ".release-entry"
+ 
+ 
+# SMTP configuration for email alerts
+smtp:
+  host: "smtp.migadu.com"       # Your SMTP server
+  port: 465
+  username: "thordur@aiexperience.no"     # Your email
+  # password loaded from SMTP_PASSWORD env var (see .env)
+  from_addr: "thordur@aiexperience.no"
+  to_addr: "thordur@gmail.com,lena@gervi.ai"  # Where alerts go
+  use_tls: true
+ 
+# Output settings
+output:
+  diary_dir: "./output"           # Where monthly HTML diaries are written
+  state_dir: "./state"            # Where per-source state is stored
+  base_url: ""                    # Optional: public URL for diary links in emails
+ 
