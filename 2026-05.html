@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vordur: May 2026</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --fg: #e0e0e0;
+    --accent: #6ea8fe;
+    --muted: #888;
+    --border: #222;
+    --card-bg: #111;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Berkeley Mono", "SF Mono", "Fira Code", monospace;
+    background: var(--bg);
+    color: var(--fg);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    line-height: 1.6;
+  }
+  .header {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+  }
+  .brand {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 0.25rem;
+    color: var(--accent);
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .entry {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .entry-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .entry-source {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .entry-text {
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  a { color: var(--accent); }
+  nav { margin-bottom: 2rem; }
+  nav a { margin-right: 1rem; font-size: 0.85rem; }
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+  .filters button {
+    background: var(--card-bg);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.3rem 0.7rem;
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filters button:hover { border-color: var(--accent); color: var(--fg); }
+  .filters button.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .filter-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    align-self: center;
+    margin-right: 0.3rem;
+  }
+  .filter-sep {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+    margin: 0 0.4rem;
+  }
+  .entry.hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="brand">vordur</div>
+  <h1>May 2026</h1>
+  <div class="subtitle">The watchman's log</div>
+</div>
+<div class="filters" id="filters"></div>
+<!-- ENTRIES -->
+<div class="entry" data-source="Claude Code" data-company="Anthropic">
+  <div class="entry-meta">
+    <span class="entry-source">Claude Code</span>
+    <span>2026-05-01 02:08 UTC</span>
+  </div>
+  <div class="entry-text">v2.1.126 Latest Latest</div>
+  <div class="entry-meta"><a href="https://github.com/anthropics/claude-code/releases">source page</a></div>
+</div>
+
+<div class="entry" data-source="Claude Code" data-company="Anthropic">
+  <div class="entry-meta">
+    <span class="entry-source">Claude Code</span>
+    <span>2026-05-01 02:08 UTC</span>
+  </div>
+  <div class="entry-text">v2.1.126 Latest Latest</div>
+  <div class="entry-meta"><a href="https://github.com/anthropics/claude-code/releases">source page</a></div>
+</div>
+
+<script>
+(function() {
+  const entries = document.querySelectorAll('.entry');
+  const bar = document.getElementById('filters');
+  if (!entries.length) return;
+
+  const companies = new Set(), sources = new Set();
+  entries.forEach(e => {
+    companies.add(e.dataset.company);
+    sources.add(e.dataset.source);
+  });
+
+  let activeCompany = null, activeSource = null;
+
+  function render() {
+    bar.innerHTML = '';
+    const cl = document.createElement('span');
+    cl.className = 'filter-label';
+    cl.textContent = 'Company';
+    bar.appendChild(cl);
+
+    const allC = document.createElement('button');
+    allC.textContent = 'All';
+    if (!activeCompany) allC.className = 'active';
+    allC.onclick = () => { activeCompany = null; activeSource = null; apply(); };
+    bar.appendChild(allC);
+
+    [...companies].sort().forEach(c => {
+      const b = document.createElement('button');
+      b.textContent = c;
+      if (activeCompany === c) b.className = 'active';
+      b.onclick = () => { activeCompany = activeCompany === c ? null : c; activeSource = null; apply(); };
+      bar.appendChild(b);
+    });
+
+    const sep = document.createElement('div');
+    sep.className = 'filter-sep';
+    bar.appendChild(sep);
+
+    const sl = document.createElement('span');
+    sl.className = 'filter-label';
+    sl.textContent = 'Product';
+    bar.appendChild(sl);
+
+    const allS = document.createElement('button');
+    allS.textContent = 'All';
+    if (!activeSource) allS.className = 'active';
+    allS.onclick = () => { activeSource = null; apply(); };
+    bar.appendChild(allS);
+
+    const visible = activeCompany
+      ? [...sources].filter(s => {
+          const e = document.querySelector('.entry[data-source="'+s+'"]');
+          return e && e.dataset.company === activeCompany;
+        })
+      : [...sources];
+    visible.sort().forEach(s => {
+      const b = document.createElement('button');
+      b.textContent = s;
+      if (activeSource === s) b.className = 'active';
+      b.onclick = () => { activeSource = activeSource === s ? null : s; apply(); };
+      bar.appendChild(b);
+    });
+  }
+
+  function apply() {
+    entries.forEach(e => {
+      const cm = !activeCompany || e.dataset.company === activeCompany;
+      const sm = !activeSource || e.dataset.source === activeSource;
+      e.classList.toggle('hidden', !(cm && sm));
+    });
+    render();
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
